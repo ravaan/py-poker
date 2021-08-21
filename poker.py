@@ -82,6 +82,7 @@ def two_pairs(ranks):
         return pair, low_pair
     return None
 
+
 def get_count_and_rank(hand):
     groups = group(["..23456789TJQKA".index(rank) for rank, _ in hand])
     return zip(*groups)
@@ -95,7 +96,7 @@ def hand_rank1(hand):
 
     is_straight = len(ranks) == 5 and max(ranks) - min(ranks) == 4
     is_flush = len(set([suit for _, suit in hand])) == 1
-    return (9 if (5, ) == counts else
+    return (9 if (5,) == counts else
             8 if is_straight and is_flush else
             7 if (4, 1) == counts else
             6 if (3, 2) == counts else
@@ -110,7 +111,7 @@ def hand_rank1(hand):
 def hand_rank2(hand):
     """Return the value representing the rank of the hand"""
     count_ranking = {
-        (5, ): 10,
+        (5,): 10,
         (4, 1): 7,
         (3, 2): 6,
         (3, 1, 1): 3,
@@ -132,8 +133,6 @@ def group(items):
     "with highest x as tie breaker"
     groups = [(items.count(x), x) for x in set(items)]
     return sorted(groups, reverse=True)
-
-
 
 
 def test(key=hand_rank):
