@@ -35,7 +35,7 @@ def hand_rank(hand):
 
 def card_ranks(cards):
     "Return the rank of the given card"
-    ranks = ['..23456789TJQKA'.index(r) for r, s in cards]
+    ranks = ['..23456789TJQKA'.index(rank) for rank, _ in cards]
     ranks.sort(reverse=True)
 
     # handle A 2 3 4 5 straight
@@ -51,7 +51,7 @@ def straight(ranks):
 
 def flush(cards):
     "Return true if all cards have the same suit"
-    suits = [s for _, s in cards]
+    suits = [suit for _, suit in cards]
     return len(set(suits)) == 1
 
 
@@ -73,21 +73,12 @@ def two_pairs(ranks):
 
 def hand_rank1(hand):
     "Return the value representing the rank of the hand"
-    count_ranking = {
-        (5, ): 10,
-        (4, 1): 7,
-        (3, 2): 6,
-        (3, 1, 1): 3,
-        (2, 2, 1): 2,
-        (2, 1, 1, 1): 1,
-        (1, 1, 1, 1, 1): 0
-    }
-    groups = group(["..23456789TJQKA".index(r) for r, _ in hand])
+    groups = group(["..23456789TJQKA".index(rank) for rank, _ in hand])
     counts, ranks = unzip(groups)
     if ranks == [14, 5, 4, 3, 2]: rank = [5, 4, 3, 2, 1]
 
     straight = len(ranks) == 5 and max(ranks) - min(ranks) == 4
-    flush = len(set([s for _, s in hand])) == 1
+    flush = len(set([suit for _, suit in hand])) == 1
     return (9 if (5, ) == counts else
             8 if straight and flush else
             7 if (4, 1) == counts else 
@@ -111,12 +102,12 @@ def hand_rank2(hand):
         (2, 1, 1, 1): 1,
         (1, 1, 1, 1, 1): 0
     }
-    groups = group(["..23456789TJQKA".index(r) for r, _ in hand])
+    groups = group(["..23456789TJQKA".index(rank) for rank, _ in hand])
     counts, ranks = unzip(groups)
     if ranks == [14, 5, 4, 3, 2]: rank = [5, 4, 3, 2, 1]
 
     straight = len(ranks) == 5 and max(ranks) - min(ranks) == 4
-    flush = len(set([s for _, s in hand])) == 1
+    flush = len(set([suit for _, suit in hand])) == 1
     return max(count_ranking[counts], 4 * straight + 5 * flush), ranks
 
 
@@ -163,4 +154,3 @@ def test(key = hand_rank):
 print (test())
 print (test(hand_rank1))
 print (test(hand_rank2))
-
