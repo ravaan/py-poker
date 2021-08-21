@@ -1,24 +1,27 @@
-def poker(hands, key=None):
+from typing import List, Tuple, Optional, Any, Union
+
+
+def poker(hands: List[List[str]], key=None) -> List[List[str]]:
     """Returns the list of best poker hands from the given hands"""
     if not key:
         key = hand_rank
     return all_max(hands, key=key)
 
 
-def all_max(iterable, key=lambda x: x):
+def all_max(iterable: List[List[str]], key=lambda x: x) -> List[List[str]]:
     """Return a list of all items equal to the max of the iterable"""
     result, maxvalue = [], None
 
-    for iter in iterable:
-        iter_value = key(iter)
+    for it in iterable:
+        iter_value = key(it)
         if iter_value == maxvalue:
-            result.append(iter)
+            result.append(it)
         if not result or iter_value > maxvalue:
-            result, maxvalue = [iter], iter_value
+            result, maxvalue = [it], iter_value
     return result
 
 
-def hand_rank(hand):
+def hand_rank(hand: List[str]) -> Union[Tuple[int, Optional[Any]], Tuple[int, Optional[Any], Optional[Any]]]:
     """Return the value representing the rank of the hand"""
     ranks = card_ranks(hand)
 
@@ -41,7 +44,7 @@ def hand_rank(hand):
     return 0, ranks
 
 
-def card_ranks(cards):
+def card_ranks(cards: List[str]) -> List[int]:
     """Return the rank of the given card"""
     ranks = ['..23456789TJQKA'.index(rank) for rank, _ in cards]
     ranks.sort(reverse=True)
@@ -53,18 +56,18 @@ def card_ranks(cards):
     return ranks
 
 
-def straight(ranks):
+def straight(ranks: List[int]) -> bool:
     """Return true if ranks for a straight"""
     return (max(ranks) - min(ranks) == 4) and len(set(ranks)) == 5
 
 
-def flush(cards):
+def flush(cards: List[str]) -> bool:
     """Return true if all cards have the same suit"""
     suits = [suit for _, suit in cards]
     return len(set(suits)) == 1
 
 
-def kind(n, ranks):
+def kind(n: int, ranks: List[int]) -> Union[int, None]:
     """Returns the first rank this hand has n of,"""
     "returns none if no rank is n-of-a kind"
     for rank in ranks:
@@ -73,9 +76,10 @@ def kind(n, ranks):
     return None
 
 
-def two_pairs(ranks):
-    """Returns the ranks in decreasing order"""
-    "if there are two pairs of them else returns None"
+def two_pairs(ranks: List[int]) -> Union[Tuple[int, int], None]:
+    """Returns the ranks in decreasing order
+    if there are two pairs of them else returns None
+    """
     pair = kind(2, ranks)
     low_pair = kind(2, list(reversed(ranks)))
     if pair and pair is not low_pair:
@@ -83,12 +87,12 @@ def two_pairs(ranks):
     return None
 
 
-def get_count_and_rank(hand):
+def get_count_and_rank(hand: List[List[str]]):  # #TODO: figure out correct typing for zip
     groups = group(["..23456789TJQKA".index(rank) for rank, _ in hand])
     return zip(*groups)
 
 
-def hand_rank1(hand):
+def hand_rank1(hand: List[List[str]]) -> Tuple[int, List[int]]:
     """Return the value representing the rank of the hand"""
     counts, ranks = get_count_and_rank(hand)
     if ranks == [14, 5, 4, 3, 2]:
@@ -108,7 +112,7 @@ def hand_rank1(hand):
             0), ranks
 
 
-def hand_rank2(hand):
+def hand_rank2(hand: List[List[str]]) -> Tuple[int, List[int]]:
     """Return the value representing the rank of the hand"""
     count_ranking = {
         (5,): 10,
@@ -128,14 +132,15 @@ def hand_rank2(hand):
     return max(count_ranking[counts], 4 * is_straight + 5 * is_flush), ranks
 
 
-def group(items):
-    """Return a list of [(count, x)...] in decreasing order of count"""
-    "with highest x as tie breaker"
+def group(items: List[int]) -> List[Tuple[int, int], ...]:  # TODO: figure out correct typing for dynamic length
+    """Return a list of [(count, x)...] in decreasing order of count
+    with highest x as tie breaker
+    """
     groups = [(items.count(x), x) for x in set(items)]
     return sorted(groups, reverse=True)
 
 
-def test(key=hand_rank):
+def test(key=hand_rank) -> str:
     """Test cases for the poker program"""
     sf = "9S 7S 8S 5S 6S".split()  # Straight flush  - 8
     fk = "9S 9C 6H 9D 9H".split()  # Four of a kind  - 7
@@ -168,5 +173,7 @@ def test(key=hand_rank):
 
 
 print(test())
+# noinspection PyTypeChecker
 print(test(hand_rank1))
+# noinspection PyTypeChecker
 print(test(hand_rank2))
