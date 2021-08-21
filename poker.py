@@ -159,6 +159,7 @@ def test(key: Callable[[List[str]], Union[Tuple[int, Optional[Any]], Tuple[int, 
     op = 'AH AD 2H 5D QH'.split()  # One pair        - 1
     ah = 'AH 4S 3S 7H TH'.split()  # Ace high        - 0
     sh = '2H 3H 5H 6D 7D'.split()  # Seven high      - 0
+    hand_x_100 = [sf, sf, fk, fh, fl, s1, s2, s1, tk, tp, op, ah, sh] + 87 * [tk]
     fk_ranks = card_ranks(fk)
     tp_ranks = card_ranks(tp)
     assert card_ranks(sf) == [9, 8, 7, 6, 5]
@@ -171,8 +172,7 @@ def test(key: Callable[[List[str]], Union[Tuple[int, Optional[Any]], Tuple[int, 
     assert kind(1, fk_ranks) == 6
     assert two_pairs(fk_ranks) is None
     assert two_pairs(tp_ranks) == (7, 2)
-    hands = [sf, sf, fk, fh, fl, s1, s2, s1, tk, tp, op, ah, sh] + 99 * [tk]
-    assert poker(hands, key) == [sf, sf]
+    assert poker(hand_x_100, key) == [sf, sf]
     assert poker([s1, s2], key) == [s2]
     assert poker([ah, sh], key) == [ah]
     return 'Test Passed with key=' + key.__name__
