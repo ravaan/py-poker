@@ -130,8 +130,8 @@ def hand_rank2(hand):
 def group(items):
     """Return a list of [(count, x)...] in decreasing order of count"""
     "with highest x as tie breaker"
-    group = [(items.count(x), x) for x in set(items)]
-    return sorted(group, reverse=True)
+    groups = [(items.count(x), x) for x in set(items)]
+    return sorted(groups, reverse=True)
 
 
 
@@ -141,7 +141,7 @@ def test(key=hand_rank):
     sf = "9S 7S 8S 5S 6S".split()  # Straight flush  - 8
     fk = "9S 9C 6H 9D 9H".split()  # Four of a kind  - 7
     fh = "2S 2H 6C 6H 6S".split()  # Full house      - 6
-    flush = " 2H 5H TH QH AH".split()  # Flush       - 5
+    fl = " 2H 5H TH QH AH".split()  # Flush       - 5
     s1 = "AH 3S 2H 4H 5H".split()  # A-5 Straight    - 4
     s2 = "2H 4S 3S 5H 6D".split()  # 2-6 Straight    - 4
     tk = "7H 7S 7D TH JD".split()  # Three of a Kind - 3
@@ -161,7 +161,7 @@ def test(key=hand_rank):
     assert kind(1, fk_ranks) == 6
     assert two_pairs(fk_ranks) is None
     assert two_pairs(tp_ranks) == (7, 2)
-    hands = [sf, sf, fk, fh, flush, s1, s2, s1, tk, tp, op, ah, sh] + 99 * [tk]
+    hands = [sf, sf, fk, fh, fl, s1, s2, s1, tk, tp, op, ah, sh] + 99 * [tk]
     assert poker(hands, key) == [sf, sf]
     assert poker([s1, s2], key) == [s2]
     assert poker([ah, sh], key) == [ah]
