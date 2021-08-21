@@ -1,14 +1,19 @@
-from typing import List, Tuple, Optional, Any, Union
+import pprint
+from typing import List, Tuple, Optional, Any, Union, Callable, Iterable
 
 
-def poker(hands: List[List[str]], key=None) -> List[List[str]]:
+def poker(hands: List[List[str]],
+          key: Callable[[List[str]], Union[Tuple[int, Optional[Any]], Tuple[int, Optional[Any], Optional[Any]]]]
+          = None) -> List[List[str]]:
     """Returns the list of best poker hands from the given hands"""
     if not key:
         key = hand_rank
     return all_max(hands, key=key)
 
 
-def all_max(iterable: List[List[str]], key=lambda x: x) -> List[List[str]]:
+def all_max(iterable: List[List[str]],
+            key: Callable[[List[str]], Union[Tuple[int, Optional[Any]], Tuple[int, Optional[Any], Optional[Any]]]]
+            = lambda x: x) -> List[List[str]]:
     """Return a list of all items equal to the max of the iterable"""
     result, maxvalue = [], None
 
@@ -68,8 +73,9 @@ def flush(cards: List[str]) -> bool:
 
 
 def kind(n: int, ranks: List[int]) -> Union[int, None]:
-    """Returns the first rank this hand has n of,"""
-    "returns none if no rank is n-of-a kind"
+    """Returns the first rank this hand has n of,
+    returns none if no rank is n-of-a kind
+    """
     for rank in ranks:
         if ranks.count(rank) == n:
             return rank
@@ -87,8 +93,8 @@ def two_pairs(ranks: List[int]) -> Union[Tuple[int, int], None]:
     return None
 
 
-def get_count_and_rank(hand: List[List[str]]):  # #TODO: figure out correct typing for zip
-    groups = group(["..23456789TJQKA".index(rank) for rank, _ in hand])
+def get_count_and_rank(hand: List[List[str]]) -> Iterable[Tuple[List[int], List[int]]]:
+    groups = group(['..23456789TJQKA'.index(rank) for rank, _ in hand])
     return zip(*groups)
 
 
@@ -132,7 +138,7 @@ def hand_rank2(hand: List[List[str]]) -> Tuple[int, List[int]]:
     return max(count_ranking[counts], 4 * is_straight + 5 * is_flush), ranks
 
 
-def group(items: List[int]) -> List[Tuple[int, int], ...]:  # TODO: figure out correct typing for dynamic length
+def group(items: List[int]) -> List[Tuple[int, int]]:
     """Return a list of [(count, x)...] in decreasing order of count
     with highest x as tie breaker
     """
@@ -140,19 +146,20 @@ def group(items: List[int]) -> List[Tuple[int, int], ...]:  # TODO: figure out c
     return sorted(groups, reverse=True)
 
 
-def test(key=hand_rank) -> str:
+def test(key: Callable[[List[str]], Union[Tuple[int, Optional[Any]], Tuple[int, Optional[Any], Optional[Any]]]]
+         = hand_rank) -> str:
     """Test cases for the poker program"""
-    sf = "9S 7S 8S 5S 6S".split()  # Straight flush  - 8
-    fk = "9S 9C 6H 9D 9H".split()  # Four of a kind  - 7
-    fh = "2S 2H 6C 6H 6S".split()  # Full house      - 6
-    fl = " 2H 5H TH QH AH".split()  # Flush       - 5
-    s1 = "AH 3S 2H 4H 5H".split()  # A-5 Straight    - 4
-    s2 = "2H 4S 3S 5H 6D".split()  # 2-6 Straight    - 4
-    tk = "7H 7S 7D TH JD".split()  # Three of a Kind - 3
-    tp = "7H 7C 2H 2C 3S".split()  # two pairs       - 2
-    op = "AH AD 2H 5D QH".split()  # One pair        - 1
-    ah = "AH 4S 3S 7H TH".split()  # Ace high        - 0
-    sh = "2H 3H 5H 6D 7D".split()  # Seven high      - 0
+    sf = '9S 7S 8S 5S 6S'.split()  # Straight flush   - 8
+    fk = '9S 9C 6H 9D 9H'.split()  # Four of a kind  - 7
+    fh = '2S 2H 6C 6H 6S'.split()  # Full house      - 6
+    fl = '2H 5H TH QH AH'.split()  # Flush            - 5
+    s1 = 'AH 3S 2H 4H 5H'.split()  # A-5 Straight    - 4
+    s2 = '2H 4S 3S 5H 6D'.split()  # 2-6 Straight    - 4
+    tk = '7H 7S 7D TH JD'.split()  # Three of a Kind - 3
+    tp = '7H 7C 2H 2C 3S'.split()  # two pairs       - 2
+    op = 'AH AD 2H 5D QH'.split()  # One pair        - 1
+    ah = 'AH 4S 3S 7H TH'.split()  # Ace high        - 0
+    sh = '2H 3H 5H 6D 7D'.split()  # Seven high      - 0
     fk_ranks = card_ranks(fk)
     tp_ranks = card_ranks(tp)
     assert card_ranks(sf) == [9, 8, 7, 6, 5]
@@ -169,7 +176,7 @@ def test(key=hand_rank) -> str:
     assert poker(hands, key) == [sf, sf]
     assert poker([s1, s2], key) == [s2]
     assert poker([ah, sh], key) == [ah]
-    return "Test Passed with key=" + key.__name__
+    return 'Test Passed with key=' + key.__name__
 
 
 print(test())
