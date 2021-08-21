@@ -33,46 +33,6 @@ def hand_rank(hand):
     return (0, ranks)
 
 
-def hand_rank1(hand):
-    "Return the value representing the rank of the hand"
-    groups = group(["..23456789TJQKA".index(r) for r, _ in hand])
-    counts, ranks = unzip(groups)
-    if ranks == [14, 5, 4, 3, 2]: rank = [5, 4, 3, 2, 1]
-
-    straight = len(ranks) == 5 and max(ranks) - min(ranks) == 4
-    flush = len(set([s for _, s in hand])) == 1
-    return (9 if (5, ) == counts else
-            8 if straight and flush else
-            7 if (4, 1) == counts else 
-            6 if (3, 2) == counts else 
-            5 if flush else 
-            4 if straight else
-            3 if (3, 1, 1) == counts else
-            2 if (2, 2, 1) == counts else 
-            1 if (2, 1, 1, 1) == counts else
-            0), ranks
-
-
-def hand_rank2(hand):
-    "Return the value representing the rank of the hand"
-    count_ranking = {
-        (5, ): 10,
-        (4, 1): 7,
-        (3, 2): 6,
-        (3, 1, 1): 3,
-        (2, 2, 1): 2,
-        (2, 1, 1, 1): 1,
-        (1, 1, 1, 1, 1): 0
-    }
-    groups = group(["..23456789TJQKA".index(r) for r, _ in hand])
-    counts, ranks = unzip(groups)
-    if ranks == [14, 5, 4, 3, 2]: rank = [5, 4, 3, 2, 1]
-
-    straight = len(ranks) == 5 and max(ranks) - min(ranks) == 4
-    flush = len(set([s for _, s in hand])) == 1
-    return max(count_ranking[counts], 4 * straight + 5 * flush), ranks
-
-
 def card_ranks(cards):
     "Return the rank of the given card"
     ranks = ['..23456789TJQKA'.index(r) for r, s in cards]
@@ -109,6 +69,55 @@ def two_pairs(ranks):
     if pair and pair is not low_pair:
         return (pair, low_pair)
     return None
+
+
+def hand_rank1(hand):
+    "Return the value representing the rank of the hand"
+    count_ranking = {
+        (5, ): 10,
+        (4, 1): 7,
+        (3, 2): 6,
+        (3, 1, 1): 3,
+        (2, 2, 1): 2,
+        (2, 1, 1, 1): 1,
+        (1, 1, 1, 1, 1): 0
+    }
+    groups = group(["..23456789TJQKA".index(r) for r, _ in hand])
+    counts, ranks = unzip(groups)
+    if ranks == [14, 5, 4, 3, 2]: rank = [5, 4, 3, 2, 1]
+
+    straight = len(ranks) == 5 and max(ranks) - min(ranks) == 4
+    flush = len(set([s for _, s in hand])) == 1
+    return (9 if (5, ) == counts else
+            8 if straight and flush else
+            7 if (4, 1) == counts else 
+            6 if (3, 2) == counts else 
+            5 if flush else 
+            4 if straight else
+            3 if (3, 1, 1) == counts else
+            2 if (2, 2, 1) == counts else 
+            1 if (2, 1, 1, 1) == counts else
+            0), ranks
+
+
+def hand_rank2(hand):
+    "Return the value representing the rank of the hand"
+    count_ranking = {
+        (5, ): 10,
+        (4, 1): 7,
+        (3, 2): 6,
+        (3, 1, 1): 3,
+        (2, 2, 1): 2,
+        (2, 1, 1, 1): 1,
+        (1, 1, 1, 1, 1): 0
+    }
+    groups = group(["..23456789TJQKA".index(r) for r, _ in hand])
+    counts, ranks = unzip(groups)
+    if ranks == [14, 5, 4, 3, 2]: rank = [5, 4, 3, 2, 1]
+
+    straight = len(ranks) == 5 and max(ranks) - min(ranks) == 4
+    flush = len(set([s for _, s in hand])) == 1
+    return max(count_ranking[counts], 4 * straight + 5 * flush), ranks
 
 
 def group(items):
