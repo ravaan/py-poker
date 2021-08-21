@@ -1,6 +1,8 @@
-def poker(hands):
+def poker(hands, key=None):
     "Returns the list of best poker hands from the given hands" 
-    return allmax(hands, key=hand_rank)
+    if not key: key = hand_rank
+    return allmax(hands, key=key)
+
 
 def allmax(iterable, key=lambda x:x):
     "Return a list of all items equal to the max of the iterable"
@@ -14,6 +16,7 @@ def allmax(iterable, key=lambda x:x):
             result, maxval = [iter], iter_value
     
     return result
+
 
 def hand_rank(hand):
     "Return the value representing the rank of the hand"
@@ -29,6 +32,7 @@ def hand_rank(hand):
     elif (kind(2, ranks)): return (1, kind(2, ranks), ranks)
     return (0, ranks)
 
+
 def card_ranks(cards):
     "Return the rank of the given card"
     ranks = ['..23456789TJQKA'.index(r) for r, s in cards]
@@ -39,20 +43,24 @@ def card_ranks(cards):
 
     return ranks
 
+
 def straight(ranks):
     "Return true if rnaks for a straight"
     return (max(ranks) - min(ranks) == 4) and len(set(ranks)) == 5
+
 
 def flush(cards):
     "Return true if all cards have the same suit"
     suits = [s for _, s in cards]
     return len(set(suits)) == 1
 
+
 def kind(n, ranks):
     "Returns the first rank this hand has n of, returns none if no rank is n-of-a kind"
     for rank in ranks:
         if ranks.count(rank) == n: return rank
     return None
+
 
 def two_pairs(ranks):
     "Returns the ranks in decreasing order if there are two pairs of them else, returns None"
@@ -62,7 +70,66 @@ def two_pairs(ranks):
         return (pair, low_pair)
     return None
 
-def test():
+
+def hand_rank1(hand):
+    "Return the value representing the rank of the hand"
+    count_ranking = {
+        (5, ): 10,
+        (4, 1): 7,
+        (3, 2): 6,
+        (3, 1, 1): 3,
+        (2, 2, 1): 2,
+        (2, 1, 1, 1): 1,
+        (1, 1, 1, 1, 1): 0
+    }
+    groups = group(["..23456789TJQKA".index(r) for r, _ in hand])
+    counts, ranks = unzip(groups)
+    if ranks == [14, 5, 4, 3, 2]: rank = [5, 4, 3, 2, 1]
+
+    straight = len(ranks) == 5 and max(ranks) - min(ranks) == 4
+    flush = len(set([s for _, s in hand])) == 1
+    return (9 if (5, ) == counts else
+            8 if straight and flush else
+            7 if (4, 1) == counts else 
+            6 if (3, 2) == counts else 
+            5 if flush else 
+            4 if straight else
+            3 if (3, 1, 1) == counts else
+            2 if (2, 2, 1) == counts else 
+            1 if (2, 1, 1, 1) == counts else
+            0), ranks
+
+
+def hand_rank2(hand):
+    "Return the value representing the rank of the hand"
+    count_ranking = {
+        (5, ): 10,
+        (4, 1): 7,
+        (3, 2): 6,
+        (3, 1, 1): 3,
+        (2, 2, 1): 2,
+        (2, 1, 1, 1): 1,
+        (1, 1, 1, 1, 1): 0
+    }
+    groups = group(["..23456789TJQKA".index(r) for r, _ in hand])
+    counts, ranks = unzip(groups)
+    if ranks == [14, 5, 4, 3, 2]: rank = [5, 4, 3, 2, 1]
+
+    straight = len(ranks) == 5 and max(ranks) - min(ranks) == 4
+    flush = len(set([s for _, s in hand])) == 1
+    return max(count_ranking[counts], 4 * straight + 5 * flush), ranks
+
+
+def group(items):
+    "Return a list of [(count, x)...] in decreasing order of count with highest x as tie breaker"
+    group = [(items.count(x), x) for x in set(items)]
+    return sorted(group, reverse=True)
+
+
+def unzip(pairs): return zip(*pairs)
+
+
+def test(key = hand_rank):
     "Test cases for the poker program"
     sf = "9S 7S 8S 5S 6S".split() # Straight flush  - 8 
     fk = "9S 9C 6H 9D 9H".split() # Four of a kind  - 7
@@ -87,9 +154,13 @@ def test():
     assert kind(1, fk_ranks) == 6
     assert two_pairs(fk_ranks) == None
     assert two_pairs(tp_ranks) == (7, 2)
-    assert poker([sf, sf, fk, fh, flush, s1, s2, s1, tk, tp, op, ah, sh] + 99 * [tk]) == [sf, sf]
-    assert poker([s1, s2]) == [s2]
-    assert poker([ah, sh]) == [ah]
-    return "Test Passed"
+    assert poker([sf, sf, fk, fh, flush, s1, s2, s1, tk, tp, op, ah, sh] + 99 * [tk], key) == [sf, sf]
+    assert poker([s1, s2], key) == [s2]
+    assert poker([ah, sh], key) == [ah]
+    return "Test Passed with key=" + key.__name__
+
 
 print (test())
+print (test(hand_rank1))
+print (test(hand_rank2))
+
