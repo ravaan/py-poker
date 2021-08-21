@@ -33,55 +33,8 @@ def hand_rank(hand):
     return (0, ranks)
 
 
-def card_ranks(cards):
-    "Return the rank of the given card"
-    ranks = ['..23456789TJQKA'.index(r) for r, s in cards]
-    ranks.sort(reverse=True)
-
-    # handle A 2 3 4 5 straight
-    if ranks == [14, 5, 4, 3, 2]: ranks = [5,4,3,2,1]
-
-    return ranks
-
-
-def straight(ranks):
-    "Return true if rnaks for a straight"
-    return (max(ranks) - min(ranks) == 4) and len(set(ranks)) == 5
-
-
-def flush(cards):
-    "Return true if all cards have the same suit"
-    suits = [s for _, s in cards]
-    return len(set(suits)) == 1
-
-
-def kind(n, ranks):
-    "Returns the first rank this hand has n of, returns none if no rank is n-of-a kind"
-    for rank in ranks:
-        if ranks.count(rank) == n: return rank
-    return None
-
-
-def two_pairs(ranks):
-    "Returns the ranks in decreasing order if there are two pairs of them else, returns None"
-    pair = kind(2, ranks)
-    low_pair = kind(2, list(reversed(ranks)))
-    if pair and pair is not low_pair:
-        return (pair, low_pair)
-    return None
-
-
 def hand_rank1(hand):
     "Return the value representing the rank of the hand"
-    count_ranking = {
-        (5, ): 10,
-        (4, 1): 7,
-        (3, 2): 6,
-        (3, 1, 1): 3,
-        (2, 2, 1): 2,
-        (2, 1, 1, 1): 1,
-        (1, 1, 1, 1, 1): 0
-    }
     groups = group(["..23456789TJQKA".index(r) for r, _ in hand])
     counts, ranks = unzip(groups)
     if ranks == [14, 5, 4, 3, 2]: rank = [5, 4, 3, 2, 1]
@@ -118,6 +71,44 @@ def hand_rank2(hand):
     straight = len(ranks) == 5 and max(ranks) - min(ranks) == 4
     flush = len(set([s for _, s in hand])) == 1
     return max(count_ranking[counts], 4 * straight + 5 * flush), ranks
+
+
+def card_ranks(cards):
+    "Return the rank of the given card"
+    ranks = ['..23456789TJQKA'.index(r) for r, s in cards]
+    ranks.sort(reverse=True)
+
+    # handle A 2 3 4 5 straight
+    if ranks == [14, 5, 4, 3, 2]: ranks = [5,4,3,2,1]
+
+    return ranks
+
+
+def straight(ranks):
+    "Return true if rnaks for a straight"
+    return (max(ranks) - min(ranks) == 4) and len(set(ranks)) == 5
+
+
+def flush(cards):
+    "Return true if all cards have the same suit"
+    suits = [s for _, s in cards]
+    return len(set(suits)) == 1
+
+
+def kind(n, ranks):
+    "Returns the first rank this hand has n of, returns none if no rank is n-of-a kind"
+    for rank in ranks:
+        if ranks.count(rank) == n: return rank
+    return None
+
+
+def two_pairs(ranks):
+    "Returns the ranks in decreasing order if there are two pairs of them else, returns None"
+    pair = kind(2, ranks)
+    low_pair = kind(2, list(reversed(ranks)))
+    if pair and pair is not low_pair:
+        return (pair, low_pair)
+    return None
 
 
 def group(items):
