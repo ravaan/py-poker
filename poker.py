@@ -64,14 +64,17 @@ def two_pairs(ranks):
 
 def test():
     "Test cases for the poker program"
-    sf = "9S 7S 8S 5S 6S".split()
-    fk = "9S 9C 6H 9D 9H".split()
-    fh = "2S 2H 6C 6H 6S".split()
-    tp = "7H 7C 2H 2C 3S".split()
-    s1 = "AH 3S 2H 4H 5H".split()
-    s2 = "2H 4S 3S 5H 6D".split()
-    ah = "AH 4S 3S 7H TH".split()
-    sh = "2H 3H 5H 6D 7D".split()
+    sf = "9S 7S 8S 5S 6S".split() # Straight flush  - 8 
+    fk = "9S 9C 6H 9D 9H".split() # Four of a kind  - 7
+    fh = "2S 2H 6C 6H 6S".split() # Full house      - 6
+    flush = " 2H 5H TH QH AH".split() # Flush       - 5
+    s1 = "AH 3S 2H 4H 5H".split() # A-5 Straight    - 4
+    s2 = "2H 4S 3S 5H 6D".split() # 2-6 Straight    - 4
+    tk = "7H 7S 7D TH JD".split() # Three of a Kind - 3
+    tp = "7H 7C 2H 2C 3S".split() # two pairs       - 2
+    op = "AH AD 2H 5D QH".split() # One pair        - 1
+    ah = "AH 4S 3S 7H TH".split() # Ace high        - 0
+    sh = "2H 3H 5H 6D 7D".split() # Seven high      - 0
     fk_ranks = card_ranks(fk)
     tp_ranks = card_ranks(tp)
     assert card_ranks(sf) == [9,8,7,6,5]
@@ -84,6 +87,9 @@ def test():
     assert kind(1, fk_ranks) == 6
     assert two_pairs(fk_ranks) == None
     assert two_pairs(tp_ranks) == (7, 2)
+    assert poker([sf, sf, fk, fh, flush, s1, s2, s1, tk, tp, op, ah, sh] + 99 * [tk]) == [sf, sf]
+    assert poker([s1, s2]) == [s2]
+    assert poker([ah, sh]) == [ah]
     return "Test Passed"
 
 print (test())
